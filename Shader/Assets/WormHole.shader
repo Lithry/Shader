@@ -83,7 +83,7 @@
 				sub.rgb = tex2D(_SubTex, i.uv).rgb;
 				sub.rgb = sub.rgb * w;
 				//float r2 = ()
-				col.rgb = fixed4(col.rgb * sub.rgb * (r * _Direction) , 1.0);
+				col.rgb = sub*(1.0 - abs(r)) + col * abs(r);
 				
 				return col;
 			}
