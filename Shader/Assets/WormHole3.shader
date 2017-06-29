@@ -1,4 +1,4 @@
-﻿Shader "Unlit/WormHole3"
+Shader "Unlit/WormHole3"
 {
 	Properties
 	{
@@ -8,10 +8,8 @@
 		_HoleRadio("Hole Radio", Range(0, 5)) = 0
 		_HoleRotation("Hole Rotation", Range(0, 5)) = 0
 		_HoleDistortion("Hole Distortion", Range(0, 2)) = 0
-		_HoleBrightness("Hole Brightness", Range(0, 1)) = 0.5
-		_HoleIntensity("Hole Intensity", Range(50, 0)) = 1
-		_MoveIntensityX("Move Intensity on X", Range(0, 1)) = 0.5
-		_MoveIntensityY("Move Intensity on Y", Range(0, 1)) = 0.5
+		_HoleBrightness("Hole Brightness", Range(0, 2)) = 0.5
+		_DirectionSpeed("Direction & Speed", Range(-1, 1)) = 1
 	}
 	SubShader
 	{
@@ -46,13 +44,11 @@
 			sampler2D _Mask;
 			float4 _Mask_ST;
 
-			float _MoveIntensityX;
-			float _MoveIntensityY;
 			float _HoleRadio;
 			float _HoleRotation;
 			float _HoleDistortion;
 			float _HoleBrightness;
-			float _HoleIntensity;
+			float _DirectionSpeed;
 
 			v2f vert(appdata v)
 			{
@@ -75,16 +71,12 @@
 			float2 p = -1.0 + 2.0 * i.uv.xy;
 			float2 uv;
 			
-			
-			//p.x += 0.5*sin(time*0.71) * _MoveIntensityX;
-			//p.y += 0.5*cos(time*1.64) * _MoveIntensityY;
-			
 			float r = sqrt(dot(p, p)) *_HoleRadio;
 	
 			
 			float a = time + atan2(p.y, p.x) + 0.05*sin(r*(5.0 + 2.0*sin((time * _HoleRotation + 1) / 4.0))) + 5.0*cos((time * _HoleRotation + 1) / 7.0);
-			//float s = smoothstep(0.0, 0.7, 0.5 + 0.4*cos(7.0*a)*sin(time / 3.0)) * _HoleDistortion;
-			uv.x = time + 1 / (r + 0.2);
+			float s = smoothstep(0.0, 0.7, 0.5 + 0.4*cos(7.0*a)*sin(time / 3.0)) * _HoleDistortion;
+			uv.x = time + _DirectionSpeed / (r + 0.2*s);
 			uv.y = -time + 3.0*a / 3.14;
 
 			float w = (0.5 + 0.5) * r  * r * _HoleBrightness;
